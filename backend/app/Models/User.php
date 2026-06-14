@@ -30,4 +30,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function protocols() { return $this->hasMany(Protocol::class); }
+    public function threads()   { return $this->hasMany(Thread::class); }
+    public function comments()  { return $this->hasMany(Comment::class); }
+    public function reviews()   { return $this->hasMany(Review::class); }
+    public function votes()     { return $this->hasMany(Vote::class); }
 }
