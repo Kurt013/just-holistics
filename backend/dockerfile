@@ -78,4 +78,4 @@ EXPOSE 80
 # =========================
 # 7. START APACHE
 # =========================
-CMD ["apache2-foreground"]
+CMD php artisan migrate --force && apache2-foreground
