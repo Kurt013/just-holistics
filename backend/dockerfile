@@ -3,7 +3,7 @@ FROM php:8.2-apache
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies
+# Install system dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -22,23 +22,33 @@ RUN apt-get update && apt-get install -y \
         gd \
         zip
 
-# Enable Apache rewrite (required for Laravel routes)
+# Enable Apache rewrite module (required for Laravel routes)
 RUN a2enmod rewrite
 
-# Copy application
-COPY . .
+# Set Composer memory limit (IMPORTANT for build stability)
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Copy only composer files first (better caching)
+COPY composer.json composer.lock ./
 
-# Fix permissions
+# Install PHP dependencies (no dev packages for production)
+RUN composer install \
+    --no-interaction \
+    --prefer-dist \
+    --no-dev \
+    --optimize-autoloader
+
+# Copy the rest of the application
+COPY . .
+
+# Fix Laravel permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Set Apache to use Laravel public folder
+# Set Apache document root to Laravel /public
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
