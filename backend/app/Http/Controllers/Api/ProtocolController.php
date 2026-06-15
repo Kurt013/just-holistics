@@ -14,7 +14,7 @@ class ProtocolController extends Controller
             ->withCount('threads');
 
         // Filter by title
-        if ($request->filled('title')) {
+        if ($request->filled('q')) {
             $query->where('title', 'like', '%' . $request->title . '%');
         }
 
