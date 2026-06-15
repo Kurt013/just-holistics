@@ -49,9 +49,9 @@ export default async function ProtocolPage({
 
 	return (
 		<main className="min-h-screen bg-slate-50">
-			<div className="flex gap-8 mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
-				<div className="flex-1">
-					<div className="flex gap-8">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mx-auto max-w-8xl px-4 py-8 sm:px-6 lg:px-8">
+				<div className="grid grid-cols-1 gap-8 lg:col-span-2">
+					<div className="flex-1 gap-8">
 						<div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 							<div className="border-b border-slate-100 bg-gradient-to-r from-amber-50 via-white to-emerald-50 p-6 sm:p-8">
 								<div className="mt-3 flex flex-wrap items-center gap-3">
@@ -102,7 +102,7 @@ export default async function ProtocolPage({
 						/>
 					</div>
 				</div>
-				<div className="basis-1/3">
+				<div>
 					<div className="flex items-center gap-2">
 						<h2 className="text-2xl font-semibold text-slate-900">Threads</h2>
 						<ThreadModalTrigger protocolId={protocol.id} />

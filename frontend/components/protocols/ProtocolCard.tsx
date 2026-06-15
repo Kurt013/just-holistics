@@ -57,7 +57,7 @@ export default function ProtocolCard({ protocol }: ProtocolCardProps) {
         <p className="text-sm text-gray-500 line-clamp-3 mb-4 flex-1">{excerpt}</p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+        <div className="flex flex-wrap items-center justify-between pt-3 border-t border-gray-50">
           <div className="flex items-center gap-1.5">
             <StarRating value={protocol.rating} size="sm" />
             <span className="text-xs text-gray-500">
