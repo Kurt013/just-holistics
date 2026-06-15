@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import api from '@/lib/api';
 
 interface NewProtocolFormProps {
@@ -14,7 +14,7 @@ export default function NewProtocolForm({ onSuccess, onCancel }: NewProtocolForm
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
       setError('Title and content are required.');

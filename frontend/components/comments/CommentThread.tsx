@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SyntheticEvent } from "react";
 import api from "@/lib/api";
 import CommentItem from "./CommentItem";
 
@@ -52,10 +52,10 @@ export default function CommentThread({ threadId }: Props) {
     return () => controller.abort();
   }, [threadId]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!body.trim()) return;
-    await api.post(`api/threads/${threadId}/comments`, { body, user_id: 1 });
+    await api.post(`api/threads/${threadId}/comments`, { body });
     setBody("");
     fetchComments();
   };

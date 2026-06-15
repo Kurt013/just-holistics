@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import StarRating from '@/components/ui/StarRating';
 
@@ -50,7 +50,7 @@ export default function ProtocolReviews({
     loadReviews();
   }, [protocolId]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!rating) return;
@@ -59,7 +59,6 @@ export default function ProtocolReviews({
 
     try {
       await api.post(`api/protocols/${protocolId}/reviews`, {
-        user_id: 1,
         rating,
         feedback: feedback.trim() || null,
       });

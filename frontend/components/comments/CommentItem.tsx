@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import api from '@/lib/api';
 import VoteButtons from '@/components/ui/VoteButtons';
 import { Comment } from './CommentThread';
@@ -15,7 +15,7 @@ export default function CommentItem({ comment, onReply, depth = 0, id }: Props) 
   const [showReply, setShowReply] = useState(false);
   const [replyBody, setReplyBody] = useState('');
 
-  const submitReply = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submitReply = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!replyBody.trim()) return;
     await api.post(`api/comments/${comment.id}/replies`, { body: replyBody, user_id: id });
