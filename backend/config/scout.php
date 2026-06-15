@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Protocol;
+use App\Models\Thread;
+
 return [
 
     /*
@@ -181,6 +184,16 @@ return [
         ],
         // 'max_total_results' => env('TYPESENSE_MAX_TOTAL_RESULTS', 1000),
         'model-settings' => [
+            Thread::class => [
+                'search-parameters' => [
+                    'query_by' => 'title,body,tags',
+                ],
+            ],
+            Protocol::class => [
+                'search-parameters' => [
+                    'query_by' => 'author,title,tags',
+                ],
+            ],
             // User::class => [
             //     'collection-schema' => [
             //         'fields' => [
