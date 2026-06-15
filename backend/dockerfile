@@ -1,4 +1,4 @@
-FROM php:8.5-apache
+FROM php:8.4-apache
 
 # Set working directory
 WORKDIR /var/www/html
@@ -22,33 +22,47 @@ RUN apt-get update && apt-get install -y \
         gd \
         zip
 
-# Enable Apache rewrite module (required for Laravel routes)
+# Enable Apache rewrite (required for Laravel routing)
 RUN a2enmod rewrite
 
-# Set Composer memory limit (IMPORTANT for build stability)
+# Set Composer memory limit (prevents build crash)
 ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy only composer files first (better caching)
+# =========================
+# 1. COPY ONLY DEPENDENCY FILES FIRST (CACHE LAYER)
+# =========================
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies (no dev packages for production)
+# Install dependencies WITHOUT running Laravel scripts
 RUN composer install \
     --no-interaction \
     --prefer-dist \
     --no-dev \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-scripts
 
-# Copy the rest of the application
+# =========================
+# 2. COPY FULL APPLICATION
+# =========================
 COPY . .
 
-# Fix Laravel permissions
+# =========================
+# 3. FIX LARAVEL PERMISSIONS
+# =========================
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Set Apache document root to Laravel /public
+# =========================
+# 4. RUN SAFE LARAVEL POST SETUP
+# =========================
+RUN php artisan package:discover || true
+
+# =========================
+# 5. APACHE CONFIG (POINT TO /public)
+# =========================
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
@@ -56,8 +70,12 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
     /etc/apache2/apache2.conf \
     /etc/apache2/conf-available/*.conf
 
-# Expose port
+# =========================
+# 6. EXPOSE PORT
+# =========================
 EXPOSE 80
 
-# Start Apache
+# =========================
+# 7. START APACHE
+# =========================
 CMD ["apache2-foreground"]
