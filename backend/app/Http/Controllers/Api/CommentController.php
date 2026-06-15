@@ -23,11 +23,10 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'body'    => 'required|string',
-            'user_id' => 'required|exists:users,id',
         ]);
 
         $comment = $thread->comments()->create([
-            'user_id'   => $validated['user_id'],
+            'user_id'   => $request->user()->id,
             'body'      => $validated['body'],
             'parent_id' => null,
         ]);
@@ -39,11 +38,10 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'body'    => 'required|string',
-            'user_id' => 'required|exists:users,id',
         ]);
 
         $reply = Comment::create([
-            'user_id'          => $validated['user_id'],
+            'user_id'          => $request->user()->id,
             'body'             => $validated['body'],
             'parent_id'        => $comment->id,
             'commentable_id'   => $comment->commentable_id,

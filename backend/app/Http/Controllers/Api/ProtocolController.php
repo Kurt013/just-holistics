@@ -23,7 +23,6 @@ class ProtocolController extends Controller
             'most_recent'   => $query->latest(),
             'most_reviewed' => $query->orderByDesc('reviews_count'),
             'highest_rated' => $query->orderByDesc('rating'),
-            'most_upvoted'  => $query->orderByDesc('upvotes_count'),
             default         => $query->latest(),
         };
 
@@ -36,10 +35,14 @@ class ProtocolController extends Controller
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
             'tags'    => 'nullable|array',
-            'user_id' => 'required|exists:users,id',
         ]);
 
-        $protocol = Protocol::create($validated);
+        $protocol = Protocol::create([
+            'title'   => $validated['title'],
+            'content' => $validated['content'],
+            'tags'    => $validated['tags'] ?? [],
+            'user_id' => $request->user()->id,
+        ]);
 
         return response()->json($protocol->load('user'), 201);
     }
@@ -60,7 +63,11 @@ class ProtocolController extends Controller
             'tags'    => 'nullable|array',
         ]);
 
-        $protocol->update($validated);
+        $protocol->update([
+            'title'   => $validated['title'] ?? $protocol->title,
+            'content' => $validated['content'] ?? $protocol->content,
+            'tags'    => $validated['tags'] ?? $protocol->tags,
+        ]);
 
         return response()->json($protocol);
     }

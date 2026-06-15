@@ -17,13 +17,12 @@ class ReviewController extends Controller
     public function store(Request $request, Protocol $protocol)
     {
         $validated = $request->validate([
-            'user_id'  => 'required|exists:users,id',
             'rating'   => 'required|integer|min:1|max:5',
             'feedback' => 'nullable|string',
         ]);
 
         $review = Review::updateOrCreate(
-            ['user_id' => $validated['user_id'], 'protocol_id' => $protocol->id],
+            ['user_id' => $request->user()->id, 'protocol_id' => $protocol->id],
             ['rating' => $validated['rating'], 'feedback' => $validated['feedback']]
         );
 

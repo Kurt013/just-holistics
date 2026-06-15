@@ -10,12 +10,11 @@ class VoteController extends Controller
     private function processVote(Request $request, $model): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
             'type'    => 'required|in:up,down',
         ]);
 
         $existing = Vote::where([
-            'user_id'      => $request->user_id,
+            'user_id'      => $request->user()->id,
             'votable_id'   => $model->id,
             'votable_type' => get_class($model),
         ])->first();
@@ -32,7 +31,7 @@ class VoteController extends Controller
             }
         } else {
             Vote::create([
-                'user_id'      => $request->user_id,
+                'user_id'      => $request->user()->id,
                 'votable_id'   => $model->id,
                 'votable_type' => get_class($model),
                 'type'         => $request->type,

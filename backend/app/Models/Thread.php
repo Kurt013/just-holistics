@@ -18,7 +18,23 @@ class Thread extends Model
 
     public function user()     { return $this->belongsTo(User::class); }
     public function protocol() { return $this->belongsTo(Protocol::class); }
-    public function comments() { return $this->morphMany(Comment::class, 'commentable'); }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable')
+            ->whereNull('parent_id');
+    }
+
     public function votes()    { return $this->morphMany(Vote::class, 'votable'); }
 
     public function toSearchableArray(): array

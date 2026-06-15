@@ -11,11 +11,11 @@ class ThreadController extends Controller
     {
         $query = Thread::with('user', 'protocol');
 
-        if ($request->filled('title')) {
-            $query->where('title', 'like', '%' . $request->title . '%');
+        if ($request->filled('q')) {
+            $query->where('title', 'like', '%' . $request->q . '%');
         }
 
-        match ($request->sort) {
+        $query = match ($request->sort) {
             'most_recent'  => $query->latest(),
             'most_upvoted' => $query->orderByDesc('upvotes_count'),
             default        => $query->latest(),
@@ -30,7 +30,8 @@ class ThreadController extends Controller
             ->with('user')
             ->withCount('comments')
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return response()->json($threads);
     }
@@ -41,10 +42,15 @@ class ThreadController extends Controller
             'title'   => 'required|string|max:255',
             'body'    => 'required|string',
             'tags'    => 'nullable|array',
-            'user_id' => 'required|exists:users,id',
         ]);
 
-        $thread = $protocol->threads()->create($validated);
+
+        $thread = $protocol->threads()->create([
+            'title'   => $validated['title'],
+            'body'    => $validated['body'],
+            'tags'    => $validated['tags'] ?? [],
+            'user_id' => $request->user()->id,
+        ]);
 
         return response()->json($thread->load('user'), 201);
     }
@@ -52,8 +58,13 @@ class ThreadController extends Controller
     public function show(Thread $thread)
     {
         return response()->json(
-            $thread->load(['user', 'protocol', 'comments.user', 'comments.replies.user'])
-                   ->loadCount('comments')
+            $thread->load([
+                'user',
+                'protocol',
+                'comments.user',
+                'comments.replies.user',
+            ])
+            ->loadCount('comments')
         );
     }
 
@@ -65,7 +76,12 @@ class ThreadController extends Controller
             'tags'  => 'nullable|array',
         ]);
 
-        $thread->update($validated);
+        $thread->update([
+            'title' => $validated['title'] ?? $thread->title,
+            'body'  => $validated['body'] ?? $thread->body,
+            'tags'  => $validated['tags'] ?? $thread->tags,
+        ]);
+
         return response()->json($thread);
     }
 

@@ -16,6 +16,10 @@ class Comment extends Model
     public function user()        { return $this->belongsTo(User::class); }
     public function commentable() { return $this->morphTo(); }
     public function parent()      { return $this->belongsTo(Comment::class, 'parent_id'); }
-    public function replies()     { return $this->hasMany(Comment::class, 'parent_id'); }
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')
+            ->with(['user', 'replies']); // recursive
+    }
     public function votes()       { return $this->morphMany(Vote::class, 'votable'); }
 }
