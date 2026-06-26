@@ -2,6 +2,9 @@
 
 A full-stack community platform for posting and discussing wellness protocols.
 
+## Demo
+https://github.com/user-attachments/assets/f39eca43-ba36-4411-b05e-8451f09fc596
+
 ## Tech Stack
 - **Backend**: Laravel 11, MySQL, Typesense
 - **Frontend**: Next.js 14, TailwindCSS, Typesense InstantSearch
