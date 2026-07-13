@@ -15,7 +15,7 @@ class ProtocolController extends Controller
 
         // Filter by title
         if ($request->filled('q')) {
-            $query->where('title', 'like', '%' . $request->title . '%');
+            $query->where('title', 'like', '%' . $request->q . '%');
         }
 
         // Sorting
